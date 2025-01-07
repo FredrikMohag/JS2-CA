@@ -9,4 +9,24 @@ export async function onAuth(event) {
   const email = event.target.email.value;
   const password = event.target.password.value;
 
-  try 
+  try {
+    if (event.submitter.dataset.auth === "login") {
+      console.log("Försöker logga in...");
+      await login(email, password);
+      console.log("onAuth körs för login!");
+    } else {
+      console.log("Försöker registrera användare...");
+      const userData = await register(name, email, password);
+      console.log(
+        `Användare registrerad: ${userData.name || userData.id || "okänd"}`
+      );
+
+      // Automatiskt inloggning efter registrering
+      console.log("Loggar in användare efter registrering...");
+      await login(email, password);
+      console.log("onAuth körs för register!");
+    }
+  } catch (error) {
+    console.error("Fel i onAuth:", error.message);
+  }
+}

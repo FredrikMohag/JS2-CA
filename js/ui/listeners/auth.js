@@ -6,4 +6,15 @@ export function setAuthListener() {
   const registerForm = document.getElementById("register-form");
   const loginForm = document.getElementById("login-form");
 
-  if (regist
+  if (registerForm) {
+    console.log(`Register-formulär hittat med ID: ${registerForm.id}`);
+    registerForm.addEventListener("submit", onAuth);
+    console.log("Lyssnare tillagd för register-formulär!");
+  }
+
+  if (loginForm) {
+    console.log(`Login-formulär hittat med ID: ${loginForm.id}`);
+    loginForm.addEventListener("submit", onAuth);
+    console.log("Lyssnare tillagd för login-formulär!");
+  }
+}

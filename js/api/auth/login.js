@@ -13,4 +13,14 @@ export async function login(email, password) {
 
   if (response.ok) {
     const { accessToken, ...profile } = (await response.json()).data;
-    save("token", 
+    save("token", accessToken);
+    save("profile", profile);
+
+    // Omdirigera användaren till feed/index.html efter inloggning
+    window.location.href = "/feed/index.html";
+
+    return profile;
+  }
+
+  throw new Error("Could not login the account");
+}
