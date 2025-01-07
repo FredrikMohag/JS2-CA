@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Social Media - Login and Register</title>
+    <link rel="stylesheet" href="../dist/css/index.css" />
+    <script src="../index.js" type="module"></script>
+    <script
+      src="../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
+      defer
+    ></script>
+  </head>
+  <body>
+    <h1>Välkommen, <span id="username">username</span>!</h1>
+    <p>Det här är din feed.</p>
+
+    <script>
+      // Exempel på att hämta användarnamnet (här kan du anpassa var du hämtar det från, t.ex. localStorage eller servern)
+      var username = localStorage.getItem("username"); // Byt ut detta om du sparar användarnamn på annat sätt
+
+      // Kontrollera om användarnamnet finns
+      if (username) {
+        // Uppdatera id="username" med det riktiga användarnamnet
+        document.getElementById("username").innerText = username;
+      } else {
+        // Om användarnamnet inte finns, kan du visa ett standardvärde eller omdirigera
+        document.getElementById("username").innerText = "Okänd användare";
+        // window.location.href = "login.html"; // Omdirigera till login om ingen användare är inloggad
+      }
+    </script>
+  </body>
+</html>
