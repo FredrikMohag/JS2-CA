@@ -1,1 +1,165 @@
-@import "../../node_modules/bootstrap/scss/
+@import "../../node_modules/bootstrap/scss/bootstrap";
+
+/* Generell stil */
+body {
+  background-color: black;
+  color: white;
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+/* Toppmenyn */
+.navbar {
+  background-color: black;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  padding: 10px 20px;
+}
+
+.navbar .navbar-brand {
+  font-size: 2rem;
+  font-family: "Brush Script MT", cursive; /* Skivstil */
+  color: white;
+}
+
+.navbar .nav-link {
+  padding: 15px;
+  font-size: 1rem;
+}
+/* Ta bort standardbakgrund och kant från navbar-toggler */
+.navbar-toggler {
+  background-color: transparent !important; /* Ta bort eventuell bakgrundsfärg */
+  border: none !important; /* Ta bort kantlinje */
+  box-shadow: none !important; /* Ta bort eventuell skugga */
+}
+
+/* Ta bort den runda cirkeln när hamburgermenyn är aktiv eller fokuserad */
+.navbar-toggler:focus,
+.navbar-toggler:active {
+  outline: none !important; /* Ta bort eventuellt fokusram */
+  box-shadow: none !important; /* Ta bort skugga */
+}
+
+/* För hamburgermenyn (triple bar) */
+.triple-bar {
+  display: block;
+  width: 30px;
+  height: 3px;
+  background-color: white;
+  position: relative;
+  transition: all 0.3s ease-in-out;
+}
+
+.triple-bar::before,
+.triple-bar::after {
+  content: "";
+  position: absolute;
+  width: 30px;
+  height: 3px;
+  background-color: white;
+  transition: all 0.3s ease-in-out;
+}
+
+.triple-bar::before {
+  top: -10px;
+}
+
+.triple-bar::after {
+  top: 10px;
+}
+
+/* Om menyn är öppen, ta bort bakgrunden för navbar-toggler */
+.navbar-toggler.collapsed {
+  background-color: transparent; /* När menyn är stängd, inga bakgrunder */
+}
+
+.navbar-toggler.collapsed {
+  background-color: transparent !important; /* När menyn är stängd, inga bakgrunder */
+}
+
+/* Profilsektionen */
+.profile-section {
+  margin-top: 80px; /* För att ge plats för toppmenyn */
+  padding: 50px;
+}
+
+.profile-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+.username {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.stats span {
+  font-size: 1rem;
+}
+
+.divider {
+  border: 0.5px solid white;
+}
+
+.profile-posts .post {
+  background-color: #333;
+  color: white;
+  text-align: center;
+  padding: 2rem;
+  border-radius: 5px;
+  border: 1px solid #444;
+}
+/* Optional: Add spacing or alignment tweaks */
+.d-flex.justify-content-end {
+  margin-bottom: 1rem; /* Add some spacing below the button if needed */
+}
+.custom-btn {
+  background-color: white;
+  color: black;
+  border: 1px solid black; /* Optional: Add a border */
+}
+
+.custom-btn:hover {
+  background-color: #f0f0f0; /* Lighter gray on hover */
+  color: black;
+}
+
+/* Optional: Add some padding for better visuals */
+.modal-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.modal-title {
+  color: #495057;
+}
+
+#makePostModal .btn-success {
+  background-color: #000000;
+}
+
+/* För att ge utrymme för mindre skärmar */
+@media (max-width: 992px) {
+  .profile-section {
+    margin-top: 120px; /* Öka utrymme för att inte dölja menyn */
+  }
+
+  .navbar-collapse {
+    justify-content: flex-end; /* Justera menyinnehåll till höger */
+  }
+
+  /* Gör menyns bredd 100% för små skärmar och gör den fullskärm */
+  .navbar-nav {
+    width: 100%;
+    text-align: center;
+  }
+
+  .navbar-nav .nav-item {
+    width: 100%;
+  }
+}
