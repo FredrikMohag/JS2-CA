@@ -1,14 +1,36 @@
 import { API_AUTH, API_BASE, API_REGISTER } from "../constants.js";
 
-export async function register(name, email, password) {
+export async function register(
+  name,
+  email,
+  password,
+  bio = null,
+  avatar = null,
+  banner = null,
+  venueManager = false
+) {
   try {
     console.log("Försöker registrera användare...");
+
+    // Skapa request-body
+    const requestBody = {
+      name,
+      email,
+      password,
+    };
+
+    // Lägg till valfria fält om de finns
+    if (bio) requestBody.bio = bio;
+    if (avatar) requestBody.avatar = avatar;
+    if (banner) requestBody.banner = banner;
+    if (venueManager) requestBody.venueManager = venueManager;
+
     const response = await fetch(`${API_BASE}${API_AUTH}${API_REGISTER}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ name, email, password }),
+      body: JSON.stringify(requestBody),
     });
 
     // Kontrollera om svar är OK
@@ -20,16 +42,13 @@ export async function register(name, email, password) {
     }
 
     const data = await response.json();
+    console.log("API-respons:", data);
 
-    // Logga framgångsrik registrering med detaljer om användaren
-    console.log(
-      `SUCCESS: Användare registrerad framgångsrikt: ${
-        data.name || data.id || "ingen identifierare tillgänglig"
-      }`
-    );
+    // Kontrollera och logga användarens namn
+    const userName = data?.data?.name || "okänd";
+    console.log(`SUCCESS: Användare registrerad framgångsrikt: ${userName}`);
 
-    // Omdirigera användaren till feed/index.html efter registreringen
-    window.location.href = "/feed/index.html";
+    window.location.href = "/profile/index.html";
 
     return data;
   } catch (error) {

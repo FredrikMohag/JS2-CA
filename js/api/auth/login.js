@@ -1,4 +1,4 @@
-import { save } from "../../storage/save.js";
+import { save } from "../../storage/storage.js";
 import { API_AUTH, API_BASE, API_LOGIN } from "../constants.js";
 
 // Logga in en användare
@@ -16,8 +16,7 @@ export async function login(email, password) {
     save("token", accessToken);
     save("profile", profile);
 
-    // Omdirigera användaren till feed/index.html efter inloggning
-    window.location.href = "/feed/index.html";
+    window.location.href = "/profile/index.html";
 
     return profile;
   }

@@ -6,28 +6,109 @@
     <title>Social Media - Login and Register</title>
     <link rel="stylesheet" href="../dist/css/index.css" />
     <script src="../index.js" type="module"></script>
+    <script src="../social.js" type="module"></script>
     <script
       src="../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
       defer
     ></script>
   </head>
   <body>
-    <h1>Välkommen, <span id="username">username</span>!</h1>
-    <p>Det här är din feed.</p>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-black fixed-top">
+      <div class="container-fluid">
+        <!-- Logo to the left -->
+        <a class="navbar-brand logo" href="#">SO-ME</a>
 
-    <script>
-      // Exempel på att hämta användarnamnet (här kan du anpassa var du hämtar det från, t.ex. localStorage eller servern)
-      var username = localStorage.getItem("username"); // Byt ut detta om du sparar användarnamn på annat sätt
+        <!-- Triple Bar Hamburger Button for mobile -->
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="triple-bar"></span>
+        </button>
 
-      // Kontrollera om användarnamnet finns
-      if (username) {
-        // Uppdatera id="username" med det riktiga användarnamnet
-        document.getElementById("username").innerText = username;
-      } else {
-        // Om användarnamnet inte finns, kan du visa ett standardvärde eller omdirigera
-        document.getElementById("username").innerText = "Okänd användare";
-        // window.location.href = "login.html"; // Omdirigera till login om ingen användare är inloggad
-      }
-    </script>
+        <!-- Menu items -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link text-white" href="#">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-white" href="#">Search</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-white" href="#">Explore</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-white" href="#">Messages</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-white" href="#">Profile</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <!-- Innehåll för posts -->
+    <div class="profile-section mt-5">
+      <h2 class="text-center text-white">Posts</h2>
+      <div class="row">
+        <!-- Post 1 -->
+        <div class="col-md-4">
+          <div class="card">
+            <img
+              src="https://via.placeholder.com/150"
+              class="card-img-top"
+              alt="Post 1"
+            />
+            <div class="card-body">
+              <h5 class="card-title">Post 1</h5>
+              <p class="card-text">
+                This is the content of the first post. It can be a short
+                description or something else!
+              </p>
+            </div>
+          </div>
+        </div>
+        <!-- Post 2 -->
+        <div class="col-md-4">
+          <div class="card">
+            <img
+              src="https://via.placeholder.com/150"
+              class="card-img-top"
+              alt="Post 2"
+            />
+            <div class="card-body">
+              <h5 class="card-title">Post 2</h5>
+              <p class="card-text">
+                This is the content of the second post. Feel free to customize!
+              </p>
+            </div>
+          </div>
+        </div>
+        <!-- Post 3 -->
+        <div class="col-md-4">
+          <div class="card">
+            <img
+              src="https://via.placeholder.com/150"
+              class="card-img-top"
+              alt="Post 3"
+            />
+            <div class="card-body">
+              <h5 class="card-title">Post 3</h5>
+              <p class="card-text">
+                This is the content of the third post. You can change the text
+                as needed!
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </body>
 </html>
