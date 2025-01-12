@@ -12,6 +12,17 @@ export function headers() {
   };
 }
 
+// Funktion för att hämta alla poster, använder authFetch för att säkerställa att headers hanteras korrekt
+export async function fetchPosts(url) {
+  try {
+    const response = await authFetch(url); // Använd authFetch för att skicka förfrågningen
+    return await response.json(); // Returnera JSON-data om responsen är OK
+  } catch (error) {
+    console.error("Error fetching posts:", error); // Hantera eventuella fel
+    return []; // Returnera en tom array om något gick fel
+  }
+}
+
 // Funktion för att göra API-anrop med autentisering
 export async function authFetch(url, options = {}) {
   try {

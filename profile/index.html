@@ -6,6 +6,7 @@
     <title>Social Media - Profile</title>
     <link rel="stylesheet" href="../dist/css/index.css" />
     <script src="../index.js" type="module"></script>
+
     <script
       src="../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
       defer
@@ -37,7 +38,16 @@
               <a class="nav-link text-white" href="#">Home</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link text-white" href="#">Search</a>
+              <a class="nav-link text-white" href="#" id="searchLink">Search</a>
+            </li>
+            <!-- Lägg till en sökinput här -->
+            <li class="nav-item">
+              <input
+                type="text"
+                id="searchInput"
+                class="form-control"
+                placeholder="Search posts..."
+              />
             </li>
             <li class="nav-item">
               <a class="nav-link text-white" href="/feed/index.html">Explore</a>
