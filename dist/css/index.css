@@ -11990,6 +11990,14 @@ body {
   background-color: #000000;
 }
 
+.profile-posts {
+  visibility: visible !important;
+}
+
+.feed-posts {
+  margin-top: 100px; /* Justera värdet efter behov */
+}
+
 /* För att ge utrymme för mindre skärmar */
 @media (max-width: 992px) {
   .profile-section {

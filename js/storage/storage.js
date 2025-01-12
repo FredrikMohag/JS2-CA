@@ -15,7 +15,6 @@ function load(key, useSessionStorage = false) {
   if (storedValue) {
     return JSON.parse(storedValue);
   } else {
-    console.log(`No data found for ${key}`);
     return null;
   }
 }
