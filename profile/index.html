@@ -101,3 +101,64 @@
         aria-labelledby="makePostModalLabel"
         aria-hidden="true"
       >
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="makePostModalLabel">
+                What's on your mind?
+              </h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <form id="createPostForm">
+                <div class="mb-3">
+                  <label for="postTitle" class="form-label">Post Title</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="postTitle"
+                    placeholder="Give your post a title"
+                    required
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="postBody" class="form-label"
+                    >Wanna share with text?</label
+                  >
+                  <textarea
+                    class="form-control"
+                    id="postBody"
+                    rows="4"
+                    placeholder="Write something..."
+                  ></textarea>
+                </div>
+                <div class="mb-3">
+                  <label for="postImage" class="form-label"
+                    >Or maybe a picture?</label
+                  >
+                  <input
+                    type="url"
+                    class="form-control"
+                    id="postImage"
+                    placeholder="Paste image URL"
+                  />
+                </div>
+                <button type="submit" class="btn btn-success w-100">
+                  Share
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-posts row g-4"></div>
+      <div class="feed-posts row g-4"></div>
+    </div>
+  </body>
+</html>
