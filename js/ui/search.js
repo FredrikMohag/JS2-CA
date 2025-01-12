@@ -57,4 +57,5 @@ function displaySearchResults(posts) {
 // Eventlyssnare för sökinput
 document.getElementById("searchInput").addEventListener("input", (event) => {
   const query = event.target.value;
-  
+  searchPosts(query);
+});
