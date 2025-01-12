@@ -25,6 +25,18 @@ export async function authFetch(url, options = {}) {
       const errorData = await response.json();
       const errorMessage =
         errorData.errors?.[0]?.message || "Ett fel inträffade vid API-anrop.";
+      const statusCode = response.status; // Hämta statuskod för vidare felhantering
+
+      console.error(
+        `API-fel - Statuskod: ${statusCode}, Meddelande: ${errorMessage}`
+      );
+
+      // Om det är ett 401-fel, token kan ha gått ut, hantera det här
+      if (statusCode === 401) {
+        // Möjlig återkoppling för att logga ut användaren eller be om ny autentisering
+        console.error("Token har gått ut eller är ogiltig. Logga in igen.");
+      }
+
       throw new Error(errorMessage);
     }
 

@@ -11994,7 +11994,8 @@ body {
   visibility: visible !important;
 }
 
-.feed-posts {
+.feed-posts,
+.feed-button {
   margin-top: 100px; /* Justera värdet efter behov */
 }
 

@@ -26,25 +26,4 @@ export async function onAuth(event) {
     } else {
       console.log("Försöker registrera användare...");
       const userData = await register(name, email, password);
-      console.log(`Användare registrerad: ${userData.data.name || "okänd"}`);
-
-      // Automatiskt logga in användaren efter registrering
-      console.log("Loggar in användare efter registrering...");
-      const loginResponse = await login(email, password);
-      console.log("Login response:", loginResponse); // Logga svaret från login
-      user = loginResponse; // Tilldela användarens profil
-      console.log("Registrering och inloggning lyckades!");
-    }
-
-    // Spara användarens ID från profilen
-    const profile = load("profile"); // Hämta den sparade profilen
-    if (profile && profile.name) {
-      save("userId", profile.name); // Använd "name" som identifierare
-      console.log("Sparat userId:", profile.name);
-    } else {
-      console.error("Kunde inte spara userId: profile är ogiltig.");
-    }
-  } catch (error) {
-    console.error("Fel i onAuth:", error.message);
-  }
-}
+      console.log(`Användar

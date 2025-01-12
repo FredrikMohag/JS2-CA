@@ -1,35 +1,29 @@
 import { authFetch } from "../fetch.js";
 import { API_BASE, API_POSTS } from "../constants.js";
-import { load } from "../../storage/storage.js"; // Lägg till denna rad
-import { loadProfilePosts } from "./loadProfilePosts.js"; // Importera den funktion som hämtar profil-poster
+import { load } from "../../storage/storage.js";
+import { loadProfilePosts } from "./loadProfilePosts.js";
+import {
+  createPostHTML,
+  addPostToDOM,
+  setupDeleteButton,
+  setupUpdateButton,
+} from "./postCard.js";
 
 // Lägg till ett inlägg till DOM
 function addPostToProfile(post) {
-  console.log("addPostToProfile körs, inlägg:", post); // Lägg till en logg för att se när inlägget läggs till
+  console.log("addPostToProfile körs, inlägg:", post);
 
-  const profilePosts = document.querySelector(".profile-posts");
-  const postHTML = `
-    <div class="col-12 col-md-4">
-      <div class="post card">
-        ${
-          post.media && post.media.url
-            ? `<img src="${post.media.url}" alt="${post.media.alt}" class="card-img-top">`
-            : ""
-        }
-        <div class="card-body">
-          <h5 class="card-title">${post.title}</h5>
-          <p class="card-text">${post.body}</p>
-        </div>
-      </div>
-    </div>
-  `;
+  // Skapa HTML för inlägget
+  const postHTML = createPostHTML(post);
 
-  // Logga när vi försöker lägga till i DOM
-  console.log("Lägger till inlägg i DOM");
+  // Lägg till inlägget i DOM
+  addPostToDOM(postHTML, ".feed-posts");
 
-  // Lägg till inlägget i början av sektionen
-  profilePosts.insertAdjacentHTML("afterbegin", postHTML);
-  console.log("Inlägg tillagt på profilsidan."); // Logga när inlägget har lagts till
+  console.log("Inlägg tillagt på profilsidan.");
+
+  // Lägg till eventlyssnare för radera- och uppdatera-knappar
+  setupDeleteButton(post.id);
+  setupUpdateButton(post.id);
 }
 
 // Skapa ett inlägg
@@ -58,7 +52,7 @@ export async function createPost(postData) {
     addPostToProfile(res.data);
 
     // Hämtar användarens id från localStorage
-    const userId = load("userId"); // Hämtar användarens ID från localStorage
+    const userId = load("userId");
 
     if (!userId) {
       console.error("User ID saknas, kan inte ladda profil-poster.");
@@ -67,16 +61,11 @@ export async function createPost(postData) {
 
     // Hämta och visa användarens uppdaterade profilposter
     const userPosts = await loadProfilePosts(userId);
-    console.log("Uppdaterade profilposter:", userPosts); // Lägg till logg för att visa vad som hämtas
+    console.log("Uppdaterade profilposter:", userPosts);
 
-    if (userPosts.length === 0) {
-      console.log("Inga poster att visa på profil.");
-    }
-
-    // Om du vill uppdatera DOM här för att visa användarens senaste inlägg:
-    const profilePosts = document.querySelector(".profile-posts");
+    const profilePosts = document.querySelector(".feed-posts");
     profilePosts.innerHTML = ""; // Rensa alla gamla inlägg
-    userPosts.forEach((post) => addPostToProfile(post)); // Lägg till alla användarens poster
+    userPosts.forEach((post) => addPostToProfile(post));
   } catch (error) {
     console.error("Fel vid skapande av inlägg:", error);
     throw error;
@@ -90,33 +79,23 @@ document.addEventListener("DOMContentLoaded", () => {
   console.log("Sätter upp eventlyssnare för formulär");
 
   createPostForm.addEventListener("submit", async (event) => {
-    event.preventDefault(); // Förhindra standardbeteendet (omformulär)
+    event.preventDefault();
 
-    // Hämta värden från formulärfälten
     const postTitle = document.getElementById("postTitle").value;
     const postBody = document.getElementById("postBody").value;
     const postImage = document.getElementById("postImage").value;
 
-    // Logga värdena innan vi skapar inlägget
-    console.log("Inlämnat formulär med följande värden:", {
-      title: postTitle,
-      body: postBody,
-      media: postImage,
-    });
-
-    // Skapa ett objekt med inläggsdata
     const postData = {
       title: postTitle,
       body: postBody,
-      media: postImage ? { url: postImage } : null, // Om en bild-URL är angiven, inkludera den
+      media: postImage ? { url: postImage } : null,
     };
 
-    console.log("Skickar inlägg:", postData); // Logga den data som skickas
+    console.log("Skickar inlägg:", postData);
 
-    // Anropa createPost-funktionen för att skapa inlägget
     try {
-      await createPost(postData); // Vänta på att inlägget ska skapas
-      console.log("Inlägg skapad framgångsrikt!"); // Logga när inlägget har skapats framgångsrikt
+      await createPost(postData);
+      console.log("Inlägg skapad framgångsrikt!");
     } catch (error) {
       console.error("Något gick fel vid skapande av inlägg:", error);
     }
