@@ -1,5 +1,20 @@
 import { API_AUTH, API_BASE, API_REGISTER } from "../constants.js";
 
+/**
+ * Registers a new user with the provided information.
+ * Optional fields like bio, avatar, banner, and venueManager can be included.
+ *
+ * @async
+ * @param {string} name - The name of the user.
+ * @param {string} email - The email address of the user.
+ * @param {string} password - The password for the account.
+ * @param {string|null} [bio=null] - A short bio for the user (optional).
+ * @param {string|null} [avatar=null] - A URL to the user's avatar image (optional).
+ * @param {string|null} [banner=null] - A URL to the user's banner image (optional).
+ * @param {boolean} [venueManager=false] - Whether the user is a venue manager (optional).
+ * @returns {Promise<Object>} The API response data.
+ * @throws {Error} Throws an error if registration fails.
+ */
 export async function register(
   name,
   email,
@@ -10,16 +25,12 @@ export async function register(
   venueManager = false
 ) {
   try {
-    console.log("Försöker registrera användare...");
-
-    // Skapa request-body
     const requestBody = {
       name,
       email,
       password,
     };
 
-    // Lägg till valfria fält om de finns
     if (bio) requestBody.bio = bio;
     if (avatar) requestBody.avatar = avatar;
     if (banner) requestBody.banner = banner;
@@ -33,7 +44,6 @@ export async function register(
       body: JSON.stringify(requestBody),
     });
 
-    // Kontrollera om svar är OK
     if (!response.ok) {
       const errorDetails = await response.text();
       throw new Error(
@@ -42,17 +52,8 @@ export async function register(
     }
 
     const data = await response.json();
-    console.log("API-respons:", data);
-
-    // Kontrollera och logga användarens namn
-    const userName = data?.data?.name || "okänd";
-    console.log(`SUCCESS: Användare registrerad framgångsrikt: ${userName}`);
-
-    window.location.href = "/profile/index.html";
-
     return data;
   } catch (error) {
-    console.error("Fel vid registrering:", error.message);
-    throw error; // Släng vidare felet för att hanteras av den som anropar
+    throw new Error(`Registration error: ${error.message}`);
   }
 }

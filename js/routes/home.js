@@ -1,99 +1,84 @@
-import { setAuthListener } from "../ui/listeners/auth.js";
+import { createPost } from "../api/posts/create.js";
 import { loadFeedPosts } from "../api/posts/loadFeedPosts.js";
 import { loadProfilePosts } from "../api/posts/loadProfilePosts.js";
+import { addPostToDOM, createPostHTML } from "../api/posts/postCard.js";
 import { getRandomAvatar, setDefaultAvatar } from "../ui/avatar.js";
-import { createPost } from "../api/posts/create.js";
-import { createPostHTML, addPostToDOM } from "../api/posts/postCard.js"; // Importera funktioner från postCard.js
+import { setAuthListener } from "../ui/listeners/auth.js";
+import { logout } from "../ui/logout.js";
+import "../ui/search.js";
 
-// Funktion för att visa alla poster i feeden
+/**
+ * Displays posts in the feed section.
+ */
 async function displayFeedPosts() {
   const feedPosts = document.querySelector(".feed-posts");
-  feedPosts.innerHTML = ""; // Rensa tidigare poster
+  feedPosts.innerHTML = ""; // Clear previous posts
 
-  console.log("Laddar feed-poster...");
   const posts = await loadFeedPosts();
 
   if (posts.length === 0) {
     feedPosts.innerHTML = "<p>No posts to display.</p>";
-    console.log("Inga poster att visa i feeden.");
     return;
   }
 
-  console.log("Hämtade poster från feed:", posts);
-
-  // Använd postCard.js för att skapa och lägga till inlägg i DOM
   posts.forEach((post) => {
-    const postHTML = createPostHTML(post); // Skapa HTML för inlägget
-    addPostToDOM(postHTML, ".feed-posts"); // Lägg till inlägget i feed-sektionen
+    const postHTML = createPostHTML(post);
+    addPostToDOM(postHTML, ".feed-posts");
   });
-
-  console.log("Feed-poster har lagts till på sidan.");
 }
 
-// Funktion för att visa användarens egna poster på profil-sidan
+/**
+ * Displays the user's own posts on the profile page.
+ */
 async function displayProfilePosts() {
   const profilePosts = document.querySelector(".profile-posts");
-  profilePosts.innerHTML = ""; // Rensa tidigare poster
+  profilePosts.innerHTML = "";
 
-  console.log("Laddar profil-poster...");
-  const user = JSON.parse(localStorage.getItem("profile")); // Hämta användarens profil från localStorage
-  const userId = user?.name;
+  const user = JSON.parse(localStorage.getItem("profile"));
+  const username = user?.name;
 
-  if (!userId) {
-    console.error("Ingen användare är inloggad.");
+  if (!username) {
     return;
   }
 
-  const userPosts = await loadProfilePosts(userId);
+  const userPosts = await loadProfilePosts(username);
 
   if (userPosts.length === 0) {
-    profilePosts.innerHTML = "<p>Inga poster att visa.</p>";
-    console.log("Inga poster att visa på profil.");
+    profilePosts.innerHTML = "<p>No posts to display.</p>";
     return;
   }
 
-  console.log("Hämtade användarposter:", userPosts);
-
-  // Använd postCard.js för att skapa och lägga till inlägg i DOM
   userPosts.forEach((post) => {
-    const postHTML = createPostHTML(post); // Skapa HTML för inlägget
-    addPostToDOM(postHTML, ".profile-posts"); // Lägg till inlägget i profil-sektionen
+    const postHTML = createPostHTML(post);
+    addPostToDOM(postHTML, ".profile-posts");
   });
-
-  console.log("Profil-poster har lagts till på sidan.");
 }
 
-// Funktion för att visa användarens profilinformation
+/**
+ * Displays the user's profile information.
+ */
 async function displayUserProfile() {
-  const user = JSON.parse(localStorage.getItem("profile")); // Hämta användarens profil från localStorage
+  const user = JSON.parse(localStorage.getItem("profile"));
   const avatarElement = document.getElementById("avatar");
 
-  console.log("Visar användarprofil...");
-
   if (user) {
-    console.log("Användarprofil funnen:", user);
     document.getElementById("username").textContent =
-      user.name || "Namn inte tillgängligt";
+      user.name || "Name not available";
     avatarElement.src = user.avatarUrl || (await getRandomAvatar());
     document.getElementById("posts").textContent = `Posts: ${user.posts || 0}`;
-    document.getElementById("followers").textContent = `Followers: ${
-      user.followers || 0
-    }`;
-    document.getElementById("following").textContent = `Following: ${
-      user.following || 0
-    }`;
+    document.getElementById("followers").textContent = `Followers: ${user.followers || 0}`;
+    document.getElementById("following").textContent = `Following: ${user.following || 0}`;
   } else {
-    alert("Du måste vara inloggad för att visa profilen.");
-    console.log("Ingen användarprofil hittades, omdirigerar till login...");
+    alert("You must be logged in to view the profile.");
     window.location.href = "/login.html";
   }
 }
 
-// Funktion för att hantera formuläret för att skapa ett nytt inlägg
+/**
+ * Handles the form submission for creating a new post.
+ */
 document.getElementById("postForm")?.addEventListener("submit", async (e) => {
   e.preventDefault();
-
-  console.log("Formulär skickas för att skapa nytt inlägg...");
 
   const title = document.querySelector("#postTitle").value;
   const body = document.querySelector("#postBody").value;
@@ -105,46 +90,88 @@ document.getElementById("postForm")?.addEventListener("submit", async (e) => {
     body,
     media: mediaUrl
       ? {
-          url: mediaUrl,
-          alt: mediaAlt || "Default alt text",
-        }
+        url: mediaUrl,
+        alt: mediaAlt || "Default alt text",
+      }
       : null,
   };
 
-  console.log("Data för inlägg:", postData);
-
   try {
     await createPost(postData);
-    console.log("Inlägg skapat framgångsrikt!");
     await displayFeedPosts();
     await displayProfilePosts();
   } catch (error) {
-    console.error("Failed to create post:", error);
+    throw new Error("Failed to create post: " + error.message);
   }
 });
 
-// Kör funktionerna vid sidladdning
-window.addEventListener("DOMContentLoaded", async () => {
-  console.log("Sidan har laddats.");
+/**
+ * Handles the logout event.
+ */
+document.getElementById("logoutButton")?.addEventListener("click", () => {
+  logout();
+});
 
+/**
+ * Handles filtering posts from filter form.
+ */
+document.getElementById("filterForm")?.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const filterValue = document.getElementById("filterBy").value;
+  let posts = await loadFeedPosts();
+
+  switch (filterValue) {
+    case "recent":
+      posts.sort((a, b) => new Date(b.created) - new Date(a.created));
+      break;
+    case "oldest":
+      posts.sort((a, b) => new Date(a.created) - new Date(b.created));
+      break;
+    case "hasMedia":
+      posts = posts.filter(post => post.media?.url);
+      break;
+    case "noMedia":
+      posts = posts.filter(post => !post.media?.url);
+      break;
+    default:
+      break;
+  }
+
+  const feedPosts = document.querySelector(".feed-posts");
+  feedPosts.innerHTML = "";
+
+  if (posts.length === 0) {
+    feedPosts.innerHTML = "<p>No posts found based on filter.</p>";
+    return;
+  }
+
+  posts.forEach(post => {
+    const postHTML = createPostHTML(post);
+    addPostToDOM(postHTML, ".feed-posts");
+  });
+});
+
+/**
+ * Executes on page load.
+ */
+window.addEventListener("DOMContentLoaded", async () => {
   if (document.querySelector(".feed-posts")) {
-    console.log("Feed-sidan har laddats.");
     await displayFeedPosts();
   }
 
   if (document.querySelector(".profile-posts")) {
-    console.log("Profil-sidan har laddats.");
     await displayProfilePosts();
   }
 
   if (document.getElementById("avatar")) {
-    console.log("Användarprofil ska visas.");
     await displayUserProfile();
     setDefaultAvatar();
   }
 });
 
+/**
+ * Homepage function to set authentication listener.
+ */
 export async function homepage() {
-  console.log("homepage funktionen är anropad!");
   setAuthListener();
 }
