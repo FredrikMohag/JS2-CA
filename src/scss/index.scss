@@ -21,7 +21,8 @@ body {
 
 .navbar .navbar-brand {
   font-size: 2rem;
-  font-family: "Brush Script MT", cursive; /* Skivstil */
+  font-family: "Brush Script MT", cursive;
+  /* Skivstil */
   color: white;
 }
 
@@ -29,18 +30,24 @@ body {
   padding: 15px;
   font-size: 1rem;
 }
+
 /* Ta bort standardbakgrund och kant från navbar-toggler */
 .navbar-toggler {
-  background-color: transparent !important; /* Ta bort eventuell bakgrundsfärg */
-  border: none !important; /* Ta bort kantlinje */
-  box-shadow: none !important; /* Ta bort eventuell skugga */
+  background-color: transparent !important;
+  /* Ta bort eventuell bakgrundsfärg */
+  border: none !important;
+  /* Ta bort kantlinje */
+  box-shadow: none !important;
+  /* Ta bort eventuell skugga */
 }
 
 /* Ta bort den runda cirkeln när hamburgermenyn är aktiv eller fokuserad */
 .navbar-toggler:focus,
 .navbar-toggler:active {
-  outline: none !important; /* Ta bort eventuellt fokusram */
-  box-shadow: none !important; /* Ta bort skugga */
+  outline: none !important;
+  /* Ta bort eventuellt fokusram */
+  box-shadow: none !important;
+  /* Ta bort skugga */
 }
 
 /* För hamburgermenyn (triple bar) */
@@ -73,16 +80,34 @@ body {
 
 /* Om menyn är öppen, ta bort bakgrunden för navbar-toggler */
 .navbar-toggler.collapsed {
-  background-color: transparent; /* När menyn är stängd, inga bakgrunder */
+  background-color: transparent;
+  /* När menyn är stängd, inga bakgrunder */
 }
 
 .navbar-toggler.collapsed {
-  background-color: transparent !important; /* När menyn är stängd, inga bakgrunder */
+  background-color: transparent !important;
+  /* När menyn är stängd, inga bakgrunder */
 }
+
+.search-results {
+  position: absolute;
+  flex-direction: column;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  width: 300px;
+  z-index: 1000;
+  border: 1px solid #ccc;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
 
 /* Profilsektionen */
 .profile-section {
-  margin-top: 80px; /* För att ge plats för toppmenyn */
+  margin-top: 80px;
+  /* För att ge plats för toppmenyn */
   padding: 50px;
 }
 
@@ -114,18 +139,23 @@ body {
   border-radius: 5px;
   border: 1px solid #444;
 }
+
 /* Optional: Add spacing or alignment tweaks */
 .d-flex.justify-content-end {
-  margin-bottom: 1rem; /* Add some spacing below the button if needed */
+  margin-bottom: 1rem;
+  /* Add some spacing below the button if needed */
 }
+
 .custom-btn {
   background-color: white;
   color: black;
-  border: 1px solid black; /* Optional: Add a border */
+  border: 1px solid black;
+  /* Optional: Add a border */
 }
 
 .custom-btn:hover {
-  background-color: #f0f0f0; /* Lighter gray on hover */
+  background-color: #f0f0f0;
+  /* Lighter gray on hover */
   color: black;
 }
 
@@ -142,21 +172,27 @@ body {
 #makePostModal .btn-success {
   background-color: #000000;
 }
+
 .profile-posts {
   visibility: visible !important;
 }
+
 .feed-posts,
 .feed-button {
-  margin-top: 100px; /* Justera värdet efter behov */
+  margin-top: 100px;
+  /* Justera värdet efter behov */
 }
+
 /* För att ge utrymme för mindre skärmar */
 @media (max-width: 992px) {
   .profile-section {
-    margin-top: 120px; /* Öka utrymme för att inte dölja menyn */
+    margin-top: 120px;
+    /* Öka utrymme för att inte dölja menyn */
   }
 
   .navbar-collapse {
-    justify-content: flex-end; /* Justera menyinnehåll till höger */
+    justify-content: flex-end;
+    /* Justera menyinnehåll till höger */
   }
 
   /* Gör menyns bredd 100% för små skärmar och gör den fullskärm */

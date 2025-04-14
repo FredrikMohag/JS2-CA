@@ -1,39 +1,38 @@
 import { API_BASE, API_POSTS } from "../constants.js";
 import { authFetch } from "../fetch.js";
 
-const action = "/posts";
-const method = "DELETE";
-
-// Ta bort inlägg
+/**
+ * Deletes a post by its ID.
+ *
+ * @async
+ * @param {string} postId - The ID of the post to delete.
+ * @returns {Promise<Object>} Empty object if successful, or API response if any.
+ * @throws {Error} If postId is missing or the request fails.
+ */
 export async function deletePost(postId) {
-  if (!postId) {
-    throw new Error("No post ID provided");
-  }
+  if (!postId) throw new Error("No post ID provided");
 
-  const deletePostURL = `${(API_BASE, API_POSTS)}${action}/${postId}`;
+  const deletePostURL = `${API_BASE}${API_POSTS}/${postId}`;
 
   try {
     const response = await authFetch(deletePostURL, {
-      method,
+      method: "DELETE",
       headers: {
-        "Content-Type": "application/json", // Använd Content-Type i DELETE-förfrågningar när du använder JSON
+        "Content-Type": "application/json",
       },
     });
 
-    // Kontrollera om svaret är OK
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(
-        `Failed to delete post: ${
-          errorData.errors?.[0]?.message || "Unknown error"
-        }`
-      );
+    if (response.status === 204) {
+      return {}; // Deletion successful
     }
 
-    // Returnera svaret om borttagningen var framgångsrik
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`Failed to delete post: ${errorData.errors?.[0]?.message || "Unknown error"}`);
+    }
+
     return await response.json();
   } catch (error) {
-    console.error("Error deleting post:", error);
-    throw error; // Kasta felet vidare för att hantera det vid behov
+    throw new Error(`Error deleting post: ${error.message}`);
   }
 }

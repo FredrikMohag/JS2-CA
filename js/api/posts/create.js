@@ -1,34 +1,37 @@
-import { authFetch } from "../fetch.js";
-import { API_BASE, API_POSTS } from "../constants.js";
 import { load } from "../../storage/storage.js";
+import { API_BASE, API_POSTS } from "../constants.js";
+import { authFetch } from "../fetch.js";
 import { loadProfilePosts } from "./loadProfilePosts.js";
 import {
-  createPostHTML,
   addPostToDOM,
+  createPostHTML,
   setupDeleteButton,
   setupUpdateButton,
 } from "./postCard.js";
 
-// Lägg till ett inlägg till DOM
+/**
+ * Adds a post to the user's profile section in the DOM.
+ *
+ * @param {Object} post - The post object to render.
+ */
 function addPostToProfile(post) {
-  console.log("addPostToProfile körs, inlägg:", post);
-
-  // Skapa HTML för inlägget
   const postHTML = createPostHTML(post);
-
-  // Lägg till inlägget i DOM
   addPostToDOM(postHTML, ".feed-posts");
 
-  console.log("Inlägg tillagt på profilsidan.");
-
-  // Lägg till eventlyssnare för radera- och uppdatera-knappar
   setupDeleteButton(post.id);
   setupUpdateButton(post.id);
 }
 
-// Skapa ett inlägg
+/**
+ * Creates a new post and updates the profile view with the new list of posts.
+ *
+ * @async
+ * @param {Object} postData - Data for the new post including title, body, and media.
+ * @returns {Promise<void>}
+ * @throws {Error} Throws if the post creation fails.
+ */
 export async function createPost(postData) {
-  const createPostURL = `${API_BASE}${API_POSTS}`;
+  const createPostURL = `${API_BASE}${API_POSTS}?_author=true&_media=true`;
 
   try {
     const response = await authFetch(createPostURL, {
@@ -41,63 +44,59 @@ export async function createPost(postData) {
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error("Fel från servern:", errorData);
-      throw new Error(errorData.errors[0]?.message || "Något gick fel!");
+      throw new Error(errorData.errors[0]?.message || "Something went wrong!");
     }
 
     const res = await response.json();
-    console.log("Inlägg skapad framgångsrikt:", res.data);
-
-    // Lägg till inlägget direkt på profilsidan
     addPostToProfile(res.data);
 
-    // Hämtar användarens id från localStorage
-    const userId = load("userId");
-
-    if (!userId) {
-      console.error("User ID saknas, kan inte ladda profil-poster.");
+    const username = load("username");
+    if (!username) {
       return;
     }
 
-    // Hämta och visa användarens uppdaterade profilposter
-    const userPosts = await loadProfilePosts(userId);
-    console.log("Uppdaterade profilposter:", userPosts);
-
+    const userPosts = await loadProfilePosts(username);
     const profilePosts = document.querySelector(".feed-posts");
-    profilePosts.innerHTML = ""; // Rensa alla gamla inlägg
-    userPosts.forEach((post) => addPostToProfile(post));
+
+    if (profilePosts) {
+      profilePosts.innerHTML = "";
+      userPosts.forEach((post) => addPostToProfile(post));
+    }
+
+    // Close the modal after successful post creation
+    const modalElement = document.getElementById("makePostModal");
+    const modal = bootstrap.Modal.getInstance(modalElement); // Get the existing modal instance
+    modal.hide();  // This hides the modal after successful post creation
+
   } catch (error) {
-    console.error("Fel vid skapande av inlägg:", error);
-    throw error;
+    console.error(`Post creation failed: ${error.message}`);
+    // Optional: show error to user in UI
   }
 }
 
-// Sätta upp eventlyssnare för formuläret när sidan laddas
+// Setup form event listener on DOM load
 document.addEventListener("DOMContentLoaded", () => {
   const createPostForm = document.getElementById("createPostForm");
 
-  console.log("Sätter upp eventlyssnare för formulär");
+  if (createPostForm) {
+    createPostForm.addEventListener("submit", async (event) => {
+      event.preventDefault(); // Prevent form from submitting normally
 
-  createPostForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
+      const postTitle = document.getElementById("postTitle").value;
+      const postBody = document.getElementById("postBody").value;
+      const postImage = document.getElementById("postImage").value;
 
-    const postTitle = document.getElementById("postTitle").value;
-    const postBody = document.getElementById("postBody").value;
-    const postImage = document.getElementById("postImage").value;
+      const postData = {
+        title: postTitle,
+        body: postBody,
+        media: postImage ? { url: postImage } : null,
+      };
 
-    const postData = {
-      title: postTitle,
-      body: postBody,
-      media: postImage ? { url: postImage } : null,
-    };
-
-    console.log("Skickar inlägg:", postData);
-
-    try {
-      await createPost(postData);
-      console.log("Inlägg skapad framgångsrikt!");
-    } catch (error) {
-      console.error("Något gick fel vid skapande av inlägg:", error);
-    }
-  });
+      try {
+        await createPost(postData); // Call the createPost function to send the post data
+      } catch (error) {
+        // Optional: show error to user in UI
+      }
+    });
+  }
 });

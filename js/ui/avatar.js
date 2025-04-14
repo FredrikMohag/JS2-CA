@@ -1,13 +1,13 @@
 // js/ui/avatar.js
 
-// Funktion för att hämta en slumpmässig bild på en katt eller hund
+// Function to fetch a random image of a cat or a dog
 export async function getRandomAvatar() {
   try {
-    // Välj slumpmässigt om du vill ha en katt eller hund
-    const isCat = Math.random() < 0.5; // 50% chans för katt eller hund
+    // Randomly choose if you want a cat or a dog
+    const isCat = Math.random() < 0.5; // 50% chance for either a cat or a dog
     let imageUrl = "";
 
-    // Hämta bild från Cat API om det är en katt
+    // Fetch image from the Cat API if it's a cat
     if (isCat) {
       const catResponse = await fetch(
         "https://api.thecatapi.com/v1/images/search"
@@ -15,7 +15,7 @@ export async function getRandomAvatar() {
       const catData = await catResponse.json();
       imageUrl = catData[0].url;
     }
-    // Hämta bild från Dog API om det är en hund
+    // Fetch image from the Dog API if it's a dog
     else {
       const dogResponse = await fetch(
         "https://api.thedogapi.com/v1/images/search"
@@ -24,17 +24,17 @@ export async function getRandomAvatar() {
       imageUrl = dogData[0].url;
     }
 
-    // Återvänd den slumpmässiga bilden (katt eller hund)
+    // Return the random image (cat or dog)
     return imageUrl;
   } catch (error) {
-    console.error("Fel vid hämtning av slumpmässig bild:", error);
-    return "default-avatar.jpg"; // Returnera en standardbild om något går fel
+    console.error("Error fetching random image:", error);
+    return "default-avatar.jpg"; // Return a default image if something goes wrong
   }
 }
 
-// Funktion för att sätta en avatar
+// Function to set an avatar
 export async function setDefaultAvatar() {
-  const avatarElement = document.getElementById("avatar"); // Byt ut id med det aktuella elementet för avataren
+  const avatarElement = document.getElementById("avatar"); // Replace with the actual element ID for the avatar
   const avatarUrl = await getRandomAvatar();
   avatarElement.src = avatarUrl;
 }

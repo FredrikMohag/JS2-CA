@@ -1,37 +1,37 @@
 import { API_BASE, API_POSTS } from "../constants.js";
 import { authFetch } from "../fetch.js";
 
+/**
+ * Loads all posts for the main feed, sorted by creation date (newest first).
+ *
+ * @async
+ * @returns {Promise<Object[]>} An array of post objects.
+ * @throws {Error} If the request fails or the data is not valid.
+ */
 export async function loadFeedPosts() {
-  try {
-    const apiUrl = `${API_BASE}${API_POSTS}`;
-    console.log("API URL:", apiUrl);
+  const apiUrl = `${API_BASE}${API_POSTS}?_author=true&_media=true`;
 
+  try {
     const response = await authFetch(apiUrl);
+
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     const { data } = await response.json();
-    console.log("Raw data from API:", data);
 
     if (!Array.isArray(data)) {
-      throw new Error("Unexpected API response format");
+      throw new Error("Unexpected response from API. Expected an array.");
     }
 
-    // Sortera posterna efter "createdAt", senaste först
     data.sort((a, b) => {
-      const dateA = a.createdAt ? new Date(a.createdAt) : 0;
-      const dateB = b.createdAt ? new Date(b.createdAt) : 0;
-      return dateB - dateA; // Senaste först
+      const dateA = a.created ? new Date(a.created) : 0;
+      const dateB = b.created ? new Date(b.created) : 0;
+      return dateB - dateA;
     });
 
-    console.log(
-      "Sorted data (latest first):",
-      data.map((post) => post.createdAt)
-    );
     return data;
   } catch (error) {
-    console.error("Failed to load feed posts:", error);
     return [];
   }
 }

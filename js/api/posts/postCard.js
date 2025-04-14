@@ -1,106 +1,156 @@
-import { deletePost } from "../posts/delete.js"; // Importera delete-funktionen
-import { updatePost } from "../posts/update.js"; // Importera update-funktionen
+import { deletePost } from "../posts/delete.js";
+import { updatePost } from "../posts/update.js";
 
+/**
+ * Creates HTML markup for a post.
+ * @param {Object} post - The post object.
+ * @param {string|number} post.id - The ID of the post.
+ * @param {Object} [post.author] - Information about the author.
+ * @param {string} [post.author.username] - Username of the author.
+ * @param {string} [post.author.name] - Name of the author.
+ * @param {string} [post.title] - Title of the post.
+ * @param {string} [post.body] - Body/content of the post.
+ * @param {Object} [post.media] - Optional media attached to the post.
+ * @param {string} [post.media.url] - URL to the media.
+ * @param {string} [post.media.alt] - Alt text for the media.
+ * @returns {string} HTML markup for the post.
+ */
 export function createPostHTML(post) {
-  // Kontrollera om post.author finns och använd det riktiga användarnamnet
-  const authorName =
-    post.author && post.author.name ? post.author.name : "Anonym";
+  const authorName = post?.author?.username || post?.author?.name || "Anonymous";
 
   return `
     <div class="col-12 col-md-4">
-      <div class="post card">
-        <!-- Användarens namn överst till vänster -->
+      <div class="post card" data-post-id="${post.id}">
         <div class="card-header d-flex justify-content-between align-items-center">
           <span class="author-name">${authorName}</span>
-          <!-- Kryss för att radera inlägg -->
-          <button class="btn btn-danger btn-sm delete-post" data-post-id="${
-            post.id
-          }">&times;</button>
+          <button class="btn btn-danger btn-sm delete-post" data-post-id="${post.id}">&times;</button>
         </div>
-
-        <!-- Postens media, t.ex. bild -->
-        ${
-          post.media && post.media.url
-            ? `<img src="${post.media.url}" alt="${
-                post.media.alt || "Bild"
-              }" class="card-img-top">`
-            : ""
-        }
-
-        <!-- Postens titel och innehåll -->
+        ${post.media?.url ? `<img src="${post.media.url}" alt="${post.media.alt || 'Image'}" class="card-img-top">` : ""}
         <div class="card-body">
-          <h5 class="card-title">${post.title || "Ingen titel"}</h5>
-          <p class="card-text">${post.body || "Inget innehåll"}</p>
+          <h5 class="card-title">${post.title || "No title"}</h5>
+          <p class="card-text">${post.body || "No content"}</p>
         </div>
-
-        <!-- Uppdatera-knapp längst ner -->
         <div class="card-footer text-right">
-          <button class="btn btn-primary btn-sm update-post" data-post-id="${
-            post.id
-          }">Update</button>
+          <button class="btn btn-primary btn-sm update-post" data-post-id="${post.id}">Update</button>
         </div>
       </div>
     </div>
   `;
 }
 
-// Lägger till ett inlägg i DOM
+/**
+ * Adds a post's HTML to the DOM and sets up its buttons.
+ * @param {string} postHTML - The post's HTML markup.
+ * @param {string} profilePostsSelector - The CSS selector for the container element.
+ */
 export function addPostToDOM(postHTML, profilePostsSelector) {
   const profilePosts = document.querySelector(profilePostsSelector);
-  if (!profilePosts) {
-    console.error(
-      `Ingen DOM-element hittad för selektorn ${profilePostsSelector}`
-    );
-    return;
-  }
+  if (!profilePosts) return;
 
-  profilePosts.insertAdjacentHTML("afterbegin", postHTML);
+  // Lägg till i slutet istället för början
+  profilePosts.insertAdjacentHTML("beforeend", postHTML);
+
+  const postId = postHTML.match(/data-post-id="([^"]+)"/)[1];
+  setupDeleteButton(postId);
+  setupUpdateButton(postId);
 }
 
-// Funktion för att sätta upp eventlyssnare för radera-knappen
+
+
+/**
+ * Sets up the delete button functionality for a post.
+ * @param {string} postId - The ID of the post.
+ */
 export function setupDeleteButton(postId) {
-  const deleteButton = document.querySelector(
-    `.delete-post[data-post-id="${postId}"]`
-  );
+  const deleteButton = document.querySelector(`.delete-post[data-post-id="${postId}"]`);
   if (deleteButton) {
     deleteButton.addEventListener("click", async () => {
       try {
-        console.log(`Försöker radera inlägg med ID: ${postId}`);
-        await deletePost(postId); // Använd deletePost-funktionen
+        await deletePost(postId);
         const postElement = deleteButton.closest(".col-12");
         if (postElement) {
           postElement.remove();
-          console.log(`Inlägg med ID: ${postId} raderat.`);
         }
       } catch (error) {
-        console.error("Fel vid radering av inlägg:", error);
+        // Handle deletion error (optional UI feedback could go here)
       }
     });
   }
 }
 
-// Funktion för att sätta upp eventlyssnare för uppdatera-knappen
+/**
+ * Sets up the update button functionality for a post.
+ * @param {string} postId - The ID of the post.
+ */
 export function setupUpdateButton(postId) {
-  const updateButton = document.querySelector(
-    `.update-post[data-post-id="${postId}"]`
-  );
+  const updateButton = document.querySelector(`.update-post[data-post-id="${postId}"]`);
   if (updateButton) {
     updateButton.addEventListener("click", async () => {
       try {
-        console.log(`Försöker uppdatera inlägg med ID: ${postId}`);
-        // Du kan lägga till en modal eller input-fält för uppdatering
-        const newTitle = prompt("Ange ny titel:");
-        const newBody = prompt("Ange nytt innehåll:");
-        if (newTitle || newBody) {
-          const updatedPost = await updatePost(postId, {
-            title: newTitle || undefined,
-            body: newBody || undefined,
-          });
-          console.log("Inlägg uppdaterat:", updatedPost);
-          location.reload(); // Ladda om sidan för att visa den uppdaterade posten
+        const postElement = document.querySelector(`.post[data-post-id="${postId}"]`);
+        const currentTitle = postElement.querySelector('.card-title').textContent;
+        const currentBody = postElement.querySelector('.card-text').textContent;
+
+        const modalHTML = `
+          <div class="modal fade" id="updatePostModal" tabindex="-1" aria-labelledby="updatePostModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="updatePostModalLabel">Update Post</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <form id="updatePostForm">
+                    <div class="mb-3">
+                      <label for="updatePostTitle" class="form-label">Post Title</label>
+                      <input type="text" class="form-control" id="updatePostTitle" value="${currentTitle}" required />
+                    </div>
+                    <div class="mb-3">
+                      <label for="updatePostBody" class="form-label">Post Content</label>
+                      <textarea class="form-control" id="updatePostBody" rows="4" required>${currentBody}</textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update Post</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+
+        if (!document.getElementById('updatePostModal')) {
+          document.body.insertAdjacentHTML('beforeend', modalHTML);
         }
+
+        const updatePostModal = new bootstrap.Modal(document.getElementById('updatePostModal'));
+        updatePostModal.show();
+
+        const modalElement = document.getElementById('updatePostModal');
+        modalElement.addEventListener('hidden.bs.modal', () => {
+          modalElement.remove();
+        });
+
+        const updatePostForm = document.getElementById('updatePostForm');
+        updatePostForm.onsubmit = async (e) => {
+          e.preventDefault();
+
+          const newTitle = document.getElementById('updatePostTitle').value;
+          const newBody = document.getElementById('updatePostBody').value;
+
+          const updatedPostData = {
+            id: postId,
+            title: newTitle,
+            body: newBody
+          };
+
+          const updatedPost = await updatePost(updatedPostData);
+
+          postElement.querySelector('.card-title').textContent = updatedPost.title;
+          postElement.querySelector('.card-text').textContent = updatedPost.body;
+
+          updatePostModal.hide();
+        };
       } catch (error) {
-        console.error("Fel vid uppdatering av inlägg:", error);
+        // Handle update error (optional UI feedback could go here)
       }
     });
   }

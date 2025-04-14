@@ -1,25 +1,46 @@
 import { save } from "../../storage/storage.js";
 import { API_AUTH, API_BASE, API_LOGIN } from "../constants.js";
 
-// Logga in en användare
+/**
+ * Logs in a user with the provided email and password.
+ * If login is successful, stores the token, user profile, and username in localStorage,
+ * and redirects the user to the profile page.
+ *
+ * @async
+ * @param {string} email - The user's email address.
+ * @param {string} password - The user's password.
+ * @returns {Promise<void>} Returns nothing, but redirects upon successful login.
+ * @throws {Error} Throws an error if login fails or an unexpected issue occurs.
+ */
 export async function login(email, password) {
-  const response = await fetch(`${API_BASE}${API_AUTH}${API_LOGIN}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ email, password }),
-  });
+  try {
+    const response = await fetch(`${API_BASE}${API_AUTH}${API_LOGIN}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
 
-  if (response.ok) {
-    const { accessToken, ...profile } = (await response.json()).data;
-    save("token", accessToken);
-    save("profile", profile);
+    const responseData = await response.json();
 
-    window.location.href = "/profile/index.html";
+    if (response.ok) {
+      if (responseData && responseData.data) {
+        const { accessToken, ...profile } = responseData.data;
+        const username = profile.name || profile.username || "User";
 
-    return profile;
+        save("token", accessToken);
+        save("profile", profile);
+        save("username", username);
+
+        window.location.href = "/profile/index.html";
+      } else {
+        throw new Error("Invalid response from server: missing data.");
+      }
+    } else {
+      throw new Error(`Server error: ${response.statusText}`);
+    }
+  } catch (error) {
+    throw new Error(`Login error: ${error.message}`);
   }
-
-  throw new Error("Could not login the account");
 }
