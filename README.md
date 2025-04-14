@@ -47,9 +47,11 @@ Develop a frontend for a social media application with features to view, post, e
    git clone https://github.com/FredrikMohag/JS2-CA.git
 
 2. Install dependencies:
+
 npm install
 
-3. Start the server:
+4. Start the server:
+   
 npm run dev
 
 ## API Documentation
@@ -57,5 +59,4 @@ npm run dev
 Use the Noroff API to interact with the backend: API Docs.
 https://docs.noroff.dev/docs/v2
 
->>>>>>> js2
 
