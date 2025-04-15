@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # 🌟 JS2-CA
 
 Welcome to the **JS2-CA** project! This guide will walk you through how to get started with installation, setup, and running the application.
@@ -47,9 +47,11 @@ Develop a frontend for a social media application with features to view, post, e
    git clone https://github.com/FredrikMohag/JS2-CA.git
 
 2. Install dependencies:
+
 npm install
 
-3. Start the server:
+4. Start the server:
+   
 npm run dev
 
 ## API Documentation
@@ -57,5 +59,4 @@ npm run dev
 Use the Noroff API to interact with the backend: API Docs.
 https://docs.noroff.dev/docs/v2
 
->>>>>>> js2
 
